@@ -1,0 +1,79 @@
+name: Build Slim Windows
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  build-windows-slim:
+    name: Windows Slim (SDL2 x64)
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >
+            git
+            make
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-libtool
+            mingw-w64-x86_64-nasm
+            autoconf
+            automake
+            mingw-w64-x86_64-ncurses
+
+      - name: autogen
+        run: ./autogen.sh
+
+      - name: configure (slim)
+        run: |
+          ./configure \
+            --enable-sdl2 \
+            --disable-mt32 \
+            --disable-printer \
+            --disable-avcodec \
+            --disable-screenshots \
+            --disable-freetype \
+            --disable-opengl \
+            --disable-x11 \
+            --disable-xbrz \
+            --disable-gamelink \
+            --disable-libfluidsynth \
+            --disable-libslirp \
+            --disable-sdltest \
+            --disable-sdl2test \
+            --disable-alsatest \
+            --host=x86_64-w64-mingw32
+
+      - name: make
+        run: make -j$(nproc)
+
+      - name: Collect DLLs
+        run: |
+          mkdir -p release
+          cp src/dosbox-x.exe release/
+          cp /mingw64/bin/SDL2.dll release/
+          cp /mingw64/bin/SDL2_net.dll release/ 2>/dev/null || true
+          cp /mingw64/bin/libgcc_s_seh-1.dll release/
+          cp /mingw64/bin/libstdc++-6.dll release/
+          cp /mingw64/bin/libwinpthread-1.dll release/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dosbox-x-slim-win64
+          path: release/
+          retention-days: 30
