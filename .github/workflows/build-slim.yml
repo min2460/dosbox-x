@@ -36,6 +36,7 @@ jobs:
             mingw-w64-x86_64-ncurses
             mingw-w64-x86_64-SDL2
             mingw-w64-x86_64-SDL2_net
+            mingw-w64-x86_64-libpng
 
       - name: autogen
         run: ./autogen.sh
@@ -69,6 +70,8 @@ jobs:
           cp src/dosbox-x.exe release/
           cp /mingw64/bin/SDL2.dll release/
           cp /mingw64/bin/SDL2_net.dll release/ 2>/dev/null || true
+          cp /mingw64/bin/libpng16-16.dll release/
+          cp /mingw64/bin/zlib1.dll release/
           cp /mingw64/bin/libgcc_s_seh-1.dll release/
           cp /mingw64/bin/libstdc++-6.dll release/
           cp /mingw64/bin/libwinpthread-1.dll release/
