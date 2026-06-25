@@ -1,8 +1,10 @@
 #!/bin/bash
 # ============================================================
-# DOSBox-X Windows 精简版编译脚本 (MinGW / MSYS2)
-# 目标平台: Windows 7 及以上 (64-bit)
+# DOSBox-X Windows 极致精简版编译脚本 (MinGW / MSYS2)
+# 目标平台: Windows 7 及以上 (64-bit SDL2)
+# 保留: 核心 DOS 仿真 + 动态 CPU 核心 + 基本音频
 # 关闭: MT32 / 打印机 / FFmpeg / 截图 / FreeType / OpenGL / X11
+#          xBRZ缩放 / GameLink / FluidSynth / libslirp / libpcap
 # 使用方式: 在 MSYS2 MinGW64 终端中运行 ./build-mingw-slim.sh
 # ============================================================
 
@@ -10,17 +12,17 @@ set -e
 
 echo "[1/4] 检查依赖..."
 if ! command -v x86_64-w64-mingw32-g++ &> /dev/null; then
-  echo "[错误] 未找到 MinGW 编译器，请先在 MSYS2 中安装依赖："
-  echo "  pacman -S git make mingw-w64-x86_64-toolchain mingw-w64-x86_64-libslirp \\"
-  echo "           mingw-w64-x86_64-libtool mingw-w64-x86_64-nasm autoconf automake \\"
-  echo "           mingw-w64-x86_64-ncurses"
+  echo "[错误] 未找到 MinGW 编译器，请先安装依赖："
+  echo "  pacman -S git make mingw-w64-x86_64-toolchain \\"
+  echo "           mingw-w64-x86_64-libtool mingw-w64-x86_64-nasm \\"
+  echo "           autoconf automake mingw-w64-x86_64-ncurses"
   exit 1
 fi
 
 echo "[2/4] 运行 autogen.sh..."
 ./autogen.sh
 
-echo "[3/4] 配置编译选项（精简版）..."
+echo "[3/4] 配置编译选项（极致精简版）..."
 ./configure \
   --enable-sdl2 \
   --disable-mt32 \
@@ -30,8 +32,13 @@ echo "[3/4] 配置编译选项（精简版）..."
   --disable-freetype \
   --disable-opengl \
   --disable-x11 \
-  --disable-alsatest \
+  --disable-xbrz \
+  --disable-gamelink \
+  --disable-libfluidsynth \
+  --disable-libslirp \
   --disable-sdltest \
+  --disable-sdl2test \
+  --disable-alsatest \
   --host=x86_64-w64-mingw32
 
 echo "[4/4] 开始编译（多核加速）..."
