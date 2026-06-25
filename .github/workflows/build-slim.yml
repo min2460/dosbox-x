@@ -5,7 +5,7 @@ on:
     branches: [ master ]
     paths-ignore:
       - '**.md'
-  workflow_dispatch:  # 支持手动触发
+  workflow_dispatch:
 
 jobs:
   build-windows-slim:
@@ -34,6 +34,8 @@ jobs:
             autoconf
             automake
             mingw-w64-x86_64-ncurses
+            mingw-w64-x86_64-SDL2
+            mingw-w64-x86_64-SDL2_net
 
       - name: autogen
         run: ./autogen.sh
