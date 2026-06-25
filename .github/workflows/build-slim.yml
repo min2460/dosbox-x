@@ -59,7 +59,9 @@ jobs:
             --disable-sdltest \
             --disable-sdl2test \
             --disable-alsatest \
-            --host=x86_64-w64-mingw32
+            --host=x86_64-w64-mingw32 \
+            ac_cv_header_d3d9_h=no \
+            ac_cv_header_d3dx9math_h=no
 
       - name: make
         run: make -j$(nproc)
